@@ -1,0 +1,20 @@
+const express = require("express");
+const userRoutes = require("./src/routes/userRoutes");
+const blogRoutes = require("./src/routes/blogRoutes");
+const commentRoutes = require("./src/routes/commentRoutes");
+
+const app = express();
+
+app.use(express.json());
+
+// Health check
+app.get("/", (req, res) => {
+  res.json({ message: "Blog API is running" });
+});
+
+// Routes
+app.use("/api/users", userRoutes);
+app.use("/api/posts", blogRoutes);
+app.use("/api/comments", commentRoutes);
+
+module.exports = app;
