@@ -3,19 +3,27 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const getAllUsers = async (req, res) => {
-  const users = await prisma.user.findMany({
-    select: { idUser: true, email: true, isAdmin: true },
-  });
-  res.json(users);
+  try {
+    const users = await prisma.user.findMany({
+      select: { idUser: true, email: true, isAdmin: true },
+    });
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const getUserById = async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { idUser: Number(req.params.id) },
-    select: { idUser: true, email: true, isAdmin: true },
-  });
-  if (!user) return res.status(404).json({ error: "User not found" });
-  res.json(user);
+  try {
+    const user = await prisma.user.findUnique({
+      where: { idUser: Number(req.params.id) },
+      select: { idUser: true, email: true, isAdmin: true },
+    });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 const createUser = async (req, res) => {
@@ -95,8 +103,12 @@ const updateUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  await prisma.user.delete({ where: { idUser: Number(req.params.id) } });
-  res.status(204).send();
+  try {
+    await prisma.user.delete({ where: { idUser: Number(req.params.id) } });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 module.exports = {
