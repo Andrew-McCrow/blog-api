@@ -6,13 +6,14 @@ const {
   updatePost,
   deletePost,
 } = require("../controllers/blogController");
+const { verifyToken, requireAdmin } = require("../middlewares/authMiddleware");
 
 const router = Router();
 
 router.get("/", getAllPosts);
 router.get("/:id", getPostById);
-router.post("/", createPost);
-router.put("/:id", updatePost);
-router.delete("/:id", deletePost);
+router.post("/", verifyToken, requireAdmin, createPost);
+router.put("/:id", verifyToken, requireAdmin, updatePost);
+router.delete("/:id", verifyToken, requireAdmin, deletePost);
 
 module.exports = router;

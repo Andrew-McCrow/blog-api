@@ -78,9 +78,17 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { email, password, isAdmin } = req.body;
+
+  const data = {};
+  if (email !== undefined) data.email = email;
+  if (isAdmin !== undefined) data.isAdmin = isAdmin;
+  if (password !== undefined) {
+    data.password = await bcrypt.hash(password, 10);
+  }
+
   const user = await prisma.user.update({
     where: { idUser: Number(req.params.id) },
-    data: { email, password, isAdmin },
+    data,
     select: { idUser: true, email: true, isAdmin: true },
   });
   res.json(user);

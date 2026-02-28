@@ -14,7 +14,7 @@ const router = Router();
 router.get("/", verifyToken, getAllUsers);
 router.get("/:id", verifyToken, getUserById);
 router.post("/", verifyToken, requireAdmin, createUser);
-router.put("/:id", verifyToken, updateUser);
+router.put("/:id", verifyToken, requireAdmin, updateUser);
 router.delete("/:id", verifyToken, deleteUser);
 router.post("/login", loginUser);
 
