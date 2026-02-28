@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const bcrypt = require("bcryptjs");
 
 const getAllUsers = async (req, res) => {
   const users = await prisma.user.findMany({
@@ -18,10 +19,22 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
   const { email, password, isAdmin } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
   const user = await prisma.user.create({
-    data: { email, password, isAdmin: isAdmin ?? false },
+    data: {
+      email,
+      password: hashedPassword,
+      isAdmin: isAdmin ?? false,
+    },
     select: { idUser: true, email: true, isAdmin: true },
   });
+
   res.status(201).json(user);
 };
 
