@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const verifyToken = require("../middlewares/authMiddleware");
 const {
   getAllUsers,
   getUserById,
@@ -10,7 +11,7 @@ const {
 
 const router = Router();
 
-router.get("/", getAllUsers);
+router.get("/", verifyToken, getAllUsers);
 router.get("/:id", getUserById);
 router.post("/", createUser);
 router.put("/:id", updateUser);
