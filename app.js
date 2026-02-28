@@ -2,6 +2,7 @@ const express = require("express");
 const userRoutes = require("./src/routes/userRoutes");
 const blogRoutes = require("./src/routes/blogRoutes");
 const commentRoutes = require("./src/routes/commentRoutes");
+const errorHandler = require("./src/middlewares/errorHandler");
 
 const app = express();
 
@@ -16,5 +17,8 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/posts", blogRoutes);
 app.use("/api/comments", commentRoutes);
+
+// Global error handler (must be last)
+app.use(errorHandler);
 
 module.exports = app;
