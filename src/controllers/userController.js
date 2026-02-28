@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const getAllUsers = async (req, res) => {
   const users = await prisma.user.findMany({
@@ -38,6 +39,43 @@ const createUser = async (req, res) => {
   res.status(201).json(user);
 };
 
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+
+  const token = jwt.sign(
+    { idUser: user.idUser, isAdmin: user.isAdmin },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" },
+  );
+
+  res.json({
+    token,
+    user: {
+      idUser: user.idUser,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    },
+  });
+};
+
 const updateUser = async (req, res) => {
   const { email, password, isAdmin } = req.body;
   const user = await prisma.user.update({
@@ -59,4 +97,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  loginUser,
 };
